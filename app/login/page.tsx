@@ -55,9 +55,32 @@ export default function LoginPage() {
 
           <button
             type="submit" disabled={loading}
-            style={{ width: '100%', background: 'var(--accent)', color: 'var(--accent-text)', border: 'none', borderRadius: 14, padding: 'var(--card-pad)', fontSize: 'var(--font-base)', fontWeight: 600, cursor: 'pointer', opacity: loading ? 0.4 : 1, marginBottom: 16, minHeight: 'var(--touch-min)' }}
+            style={{ width: '100%', background: 'var(--accent)', color: 'var(--accent-text)', border: 'none', borderRadius: 14, padding: 'var(--card-pad)', fontSize: 'var(--font-base)', fontWeight: 600, cursor: 'pointer', opacity: loading ? 0.4 : 1, marginBottom: 12, minHeight: 'var(--touch-min)' }}
           >
             {loading ? 'Ingresando...' : 'Ingresar'}
+          </button>
+
+          <div style={{ position: 'relative', marginBottom: 16 }}>
+            <div style={{ borderTop: '1px solid var(--border)', textAlign: 'center' }}>
+              <span style={{ background: 'var(--bg)', padding: '0 12px', fontSize: 'var(--font-xs)', color: 'var(--text-muted)', position: 'relative', top: -9 }}>o probá sin registrarte</span>
+            </div>
+          </div>
+
+          <button
+            onClick={async () => {
+              setLoading(true); setError('');
+              try {
+                await login('demo@trayectai.com', 'demo1234')
+              } catch (err: any) {
+                setError(err.message)
+              } finally {
+                setLoading(false)
+              }
+            }}
+            disabled={loading}
+            style={{ width: '100%', background: 'rgba(16,185,129,0.1)', color: '#10b981', border: '2px solid rgba(16,185,129,0.3)', borderRadius: 14, padding: 'var(--card-pad)', fontSize: 'var(--font-base)', fontWeight: 600, cursor: 'pointer', opacity: loading ? 0.4 : 1, marginBottom: 16, minHeight: 'var(--touch-min)' }}
+          >
+            🚀 Probar con cuenta demo
           </button>
         </form>
 

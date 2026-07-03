@@ -7,10 +7,13 @@ TrayectAI ayuda a estudiantes universitarios a visualizar su progreso académico
 > Construido con Next.js 16 · React 19 · Prisma 6 · PostgreSQL (Supabase)
 
 <p align="center">
-  <img src="demo.svg" alt="TrayectAI demo" width="100%" max-width="800px">
+  <strong>✨ Terminal Demo ✨</strong><br><br>
+  <a href="demo.svg">
+    <img src="public/demo.svg" alt="TrayectAI terminal demo — tests, build, features overview" width="90%">
+  </a>
+  <br><br>
+  <em>Hacé clic para ver la animación en pantalla completa</em>
 </p>
-
-> 📹 Demo del navegador: grabá un GIF de la UI con [ScreenToGif](https://www.screentogif.com/) y guardalo como `public/demo-browser.gif`.
 
 ---
 

@@ -8,7 +8,16 @@ export async function GET(
   const { facultyId } = await params
   const careers = await prisma.career.findMany({
     where: { facultyId, isActive: true },
-    orderBy: { name: 'asc' }
+    orderBy: { name: 'asc' },
+    include: {
+      _count: {
+        select: { careerSubjects: true }
+      }
+    }
   })
-  return NextResponse.json(careers)
+  const careersWithFlag = careers.map(c => ({
+    ...c,
+    hasSubjects: c._count.careerSubjects > 0
+  }))
+  return NextResponse.json(careersWithFlag)
 }

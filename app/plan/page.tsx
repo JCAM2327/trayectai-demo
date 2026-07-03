@@ -252,6 +252,8 @@ export default function PlanPage() {
   if (isLoading) return <Skeleton />
   if (!data) return null
 
+  const isEmptyPlan = data.subjects.length === 0
+
   const byYear = new Map<number, Subject[]>()
   for (const s of filteredSubjects) {
     if (!byYear.has(s.yearNumber)) byYear.set(s.yearNumber, [])
@@ -420,8 +422,24 @@ export default function PlanPage() {
 
       <div style={{ maxWidth: 'var(--content-max)', margin: '0 auto', padding: 'var(--content-pad) var(--content-pad) 0' }}>
 
+        {/* Empty state */}
+        {isEmptyPlan && !graphMode && !plannerMode && (
+          <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--bg-card)', borderRadius: 'var(--card-radius)', border: '1px solid var(--border)', marginBottom: 'var(--gap-md)' }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
+            <h2 style={{ fontSize: 'var(--font-lg)', fontWeight: 600, color: 'var(--text)', margin: '0 0 8px' }}>Tu carrera no tiene materias cargadas aún</h2>
+            <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-muted)', maxWidth: 400, margin: '0 auto 24px' }}>
+              El plan de estudios para esta carrera está en preparación. Mientras tanto, podés explorar una de las carreras demo con plan completo.
+            </p>
+            <a href="/onboarding"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--accent)', color: 'var(--accent-text)', border: 'none', borderRadius: 14, padding: '12px 24px', fontSize: 'var(--font-base)', fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}
+            >
+              🔄 Elegir otra carrera
+            </a>
+          </div>
+        )}
+
         {/* Banner resumen */}
-        {!graphMode && !plannerMode && (
+        {!isEmptyPlan && !graphMode && !plannerMode && (
         <div style={{ background: `linear-gradient(to right, var(--banner-from), var(--banner-to))`, border: '1px solid var(--border-accent)', borderRadius: 'var(--card-radius)', padding: 'var(--card-pad)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--gap-md)' }}>
           {[
             { val: data.approvedSubjects,      label: 'Aprobadas' },
@@ -496,7 +514,7 @@ export default function PlanPage() {
         )}
 
         {/* Sin resultados de búsqueda */}
-        {filteredSubjects.length === 0 && (
+        {!isEmptyPlan && filteredSubjects.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
             <p style={{ fontSize: 'var(--font-base)', margin: 0 }}>No se encontraron materias para "{searchQuery}"</p>
             <button
@@ -571,7 +589,7 @@ export default function PlanPage() {
         )}
 
         {/* Plan por año */}
-        {years.map(year => {
+        {!isEmptyPlan && years.map(year => {
           const subjects = byYear.get(year)!
           const approved = subjects.filter(s => s.state === 'aprobada').length
           const allYearSubjects = data.subjects.filter(s => s.yearNumber === year)

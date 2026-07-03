@@ -335,8 +335,24 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Empty state: carrera sin materias */}
+        {total === 0 && (
+          <div style={{ textAlign: 'center', padding: '32px 16px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--card-radius)', marginBottom: 'var(--gap-md)' }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>📭</div>
+            <h2 style={{ fontSize: 'var(--font-base)', fontWeight: 600, color: 'var(--text)', margin: '0 0 6px' }}>Tu carrera no tiene materias cargadas aún</h2>
+            <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', maxWidth: 360, margin: '0 auto 16px' }}>
+              El plan de estudios para esta carrera está en preparación. Cambiá a una carrera demo desde la configuración.
+            </p>
+            <a href="/settings"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--accent)', color: 'var(--accent-text)', border: 'none', borderRadius: 14, padding: '10px 20px', fontSize: 'var(--font-sm)', fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}
+            >
+              ⚙️ Ir a configuración
+            </a>
+          </div>
+        )}
+
         {/* Proyección de egreso */}
-        {graduationProjection && (
+        {total > 0 && graduationProjection && (
           <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 'var(--card-radius)', padding: 'var(--card-pad)', marginBottom: 'var(--gap-md)' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--gap-md)', marginBottom: 12 }}>
               <span style={{ fontSize: 20, flexShrink: 0 }}>🎓</span>

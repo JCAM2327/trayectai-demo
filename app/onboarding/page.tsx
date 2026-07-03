@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/auth-context'
 
 type University = { id: string; name: string; shortName: string }
 type Faculty = { id: string; name: string; shortName: string }
-type Career = { id: string; name: string; shortName: string; totalYears: number }
+type Career = { id: string; name: string; shortName: string; totalYears: number; hasSubjects?: boolean }
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -117,9 +117,22 @@ export default function OnboardingPage() {
               {careers?.length === 0 && <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-muted)' }}>No hay carreras cargadas para esta facultad.</p>}
               {careers?.map(c => (
                 <button key={c.id} onClick={() => { setCareerId(c.id); setStep(4) }}
-                  style={{ textAlign: 'left', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--card-radius)', padding: 'var(--card-pad)', cursor: 'pointer', minHeight: 'var(--touch-min)' }}
+                  style={{ textAlign: 'left', background: 'var(--bg-card)', border: `1px solid ${c.hasSubjects ? 'var(--accent)' : 'var(--border)'}`, borderRadius: 'var(--card-radius)', padding: 'var(--card-pad)', cursor: 'pointer', minHeight: 'var(--touch-min)' }}
                 >
-                  <div style={{ fontSize: 'var(--font-base)', fontWeight: 500, color: 'var(--text)' }}>{c.name}</div>
+                  <div style={{ fontSize: 'var(--font-base)', fontWeight: 500, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {c.name}
+                    <span style={{
+                      fontSize: 'var(--font-xs)',
+                      padding: '2px 8px',
+                      borderRadius: 999,
+                      fontWeight: 600,
+                      background: c.hasSubjects ? 'var(--accent)' : 'var(--border)',
+                      color: c.hasSubjects ? 'var(--accent-text)' : 'var(--text-muted)',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      {c.hasSubjects ? 'Recomendada para demo' : 'Próximamente'}
+                    </span>
+                  </div>
                   <div style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginTop: 2 }}>{c.totalYears} años · {c.shortName}</div>
                 </button>
               ))}
@@ -133,6 +146,12 @@ export default function OnboardingPage() {
             <button onClick={() => setStep(3)} style={{ fontSize: 'var(--font-sm)', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 16, padding: 0, minHeight: 'var(--touch-min)' }}>← Volver</button>
             <h1 style={{ fontSize: 'var(--font-lg)', fontWeight: 600, marginBottom: 4 }}>Creá tu cuenta</h1>
             <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-muted)', marginBottom: 24 }}>{selectedCareer?.name}</p>
+
+            {selectedCareer && !selectedCareer.hasSubjects && (
+              <div style={{ background: '#fef3c7', border: '1px solid #f59e0b', borderRadius: 12, padding: '12px 16px', marginBottom: 20, fontSize: 'var(--font-xs)', color: '#92400e' }}>
+                ⚠️ Esta carrera no tiene plan de estudios cargado aún. Te recomendamos elegir una carrera marcada como <strong>"Recomendada para demo"</strong> para explorar todas las funciones de TrayectAI. Podés cambiar de carrera más tarde desde configuración.
+              </div>
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gap-md)', marginBottom: 20 }}>
               <div>
