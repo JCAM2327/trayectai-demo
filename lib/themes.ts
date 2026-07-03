@@ -92,13 +92,13 @@ export const themes = {
 
 export function resolveTheme(theme: Theme): 'navy' | 'light' | 'dark' {
   if (theme !== 'auto') return theme
-  if (typeof window === 'undefined') return 'navy'
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'navy'
+  if (typeof window === 'undefined') return 'dark'
+  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
 }
 
 export function getTheme(): Theme {
-  if (typeof window === 'undefined') return 'navy'
-  return (localStorage.getItem('trayectai_theme') as Theme) ?? 'navy'
+  if (typeof window === 'undefined') return 'dark'
+  return (localStorage.getItem('trayectai_theme') as Theme) ?? 'dark'
 }
 
 export function setTheme(theme: Theme) {

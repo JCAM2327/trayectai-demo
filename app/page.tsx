@@ -216,7 +216,8 @@ export default function DashboardPage() {
   }, [progress, user, career])
 
   if (loading || (progressLoading && !progress)) return <Skeleton />
-  if (!userId || !careerId) return null
+  if (!loading && !user) { router.push('/login'); return <Skeleton /> }
+  if (!loading && user && !careerId) { router.push('/onboarding'); return <Skeleton /> }
 
   const pct = progress?.progressPercent ?? 0
   const approved = progress?.approvedSubjects ?? 0

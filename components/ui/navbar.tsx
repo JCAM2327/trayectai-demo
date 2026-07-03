@@ -13,10 +13,10 @@ const THEME_LABELS: Record<Theme, string> = { navy: 'Oscuro', light: 'Claro', da
 export function Navbar() {
   const router = useRouter()
   const path = usePathname()
-  const { user, logout } = useAuth()
+  const { user, loading, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
-  const [theme, setCurrentTheme] = useState<Theme>('navy')
+  const [theme, setCurrentTheme] = useState<Theme>('dark')
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export function Navbar() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [open])
 
-  if (path === '/onboarding' || path === '/login') return null
+  if (path === '/onboarding' || path === '/login' || (!loading && !user)) return null
 
   const items = [
     { label: 'Inicio', icon: '🏠', href: '/' },
