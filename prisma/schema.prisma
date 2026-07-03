@@ -1,0 +1,281 @@
+// TrayectAI— Prisma Schema
+// Generado según documento de diseño v1.0 · Junio 2026
+// Ejecutar: npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// CATÁLOGO ACADÉMICO
+// ─────────────────────────────────────────────
+
+model University {
+  id         String    @id @default(uuid())
+  name       String    @db.VarChar(200)
+  shortName  String    @db.VarChar(50)  @map("short_name")
+  country    String    @db.VarChar(100)
+  city       String    @db.VarChar(100)
+  websiteUrl String?   @db.VarChar(300) @map("website_url")
+  isActive   Boolean   @default(true)   @map("is_active")
+  createdAt  DateTime  @default(now())  @map("created_at")
+
+  faculties            Faculty[]
+  userAcademicProfiles UserAcademicProfile[]
+
+  @@map("universities")
+}
+
+model Faculty {
+  id           String     @id @default(uuid())
+  universityId String     @map("university_id")
+  name         String     @db.VarChar(200)
+  shortName    String     @db.VarChar(50)  @map("short_name")
+  code         String?    @db.VarChar(20)
+  websiteUrl   String?    @db.VarChar(300) @map("website_url")
+  isActive     Boolean    @default(true)   @map("is_active")
+  createdAt    DateTime   @default(now())  @map("created_at")
+
+  university           University            @relation(fields: [universityId], references: [id])
+  careers              Career[]
+  userAcademicProfiles UserAcademicProfile[]
+
+  @@map("faculties")
+}
+
+model Career {
+  id           String     @id @default(uuid())
+  facultyId    String     @map("faculty_id")
+  name         String     @db.VarChar(200)
+  shortName    String?    @db.VarChar(100) @map("short_name")
+  degreeType   DegreeType @map("degree_type")
+  totalYears   Int        @map("total_years")
+  totalCredits Int?       @map("total_credits")
+  planCode     String?    @db.VarChar(50)  @map("plan_code")
+  planYear     Int?       @map("plan_year")
+  resolution   String?    @db.VarChar(100)
+  isActive     Boolean    @default(true)   @map("is_active")
+  createdAt    DateTime   @default(now())  @map("created_at")
+
+  faculty              Faculty               @relation(fields: [facultyId], references: [id])
+  careerSubjects       CareerSubject[]
+  prerequisites        Prerequisite[]
+  userAcademicProfiles UserAcademicProfile[]
+  userSubjectProgress  UserSubjectProgress[]
+  exams                Exam[]
+
+  @@map("careers")
+}
+
+model Subject {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(200)
+  code      String?  @db.VarChar(50)
+  isActive  Boolean  @default(true)  @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  careerSubjects          CareerSubject[]
+  prerequisitesAsSubject  Prerequisite[]        @relation("SubjectPrereqs")
+  prerequisitesAsRequired Prerequisite[]        @relation("RequiredSubjectPrereqs")
+  userSubjectProgress     UserSubjectProgress[]
+  exams                   Exam[]
+
+  @@map("subjects")
+}
+
+// Tabla de unión carrera ↔ materia (con metadatos de cursada)
+model CareerSubject {
+  id           String      @id @default(uuid())
+  careerId     String      @map("career_id")
+  subjectId    String      @map("subject_id")
+  yearNumber   Int         @map("year_number")
+  semester     Int?        // 1 o 2; null si es anual
+  isAnnual     Boolean     @default(false) @map("is_annual")
+  credits      Decimal?    @db.Decimal(5, 2)
+  hoursWeekly  Int?        @map("hours_weekly")
+  hoursTotal   Int?        @map("hours_total")
+  subjectType  SubjectType @default(obligatoria) @map("subject_type")
+  isFinalThesis Boolean    @default(false) @map("is_final_thesis")
+  displayOrder Int?        @map("display_order")
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  career  Career  @relation(fields: [careerId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@unique([careerId, subjectId])
+  @@map("career_subjects")
+}
+
+// Grafo de correlativas
+model Prerequisite {
+  id                String           @id @default(uuid())
+  careerId          String           @map("career_id")
+  subjectId         String           @map("subject_id")
+  requiredSubjectId String           @map("required_subject_id")
+  prerequisiteType  PrerequisiteType @default(aprobada) @map("prerequisite_type")
+  createdAt         DateTime         @default(now()) @map("created_at")
+
+  career          Career  @relation(fields: [careerId], references: [id])
+  subject         Subject @relation("SubjectPrereqs", fields: [subjectId], references: [id])
+  requiredSubject Subject @relation("RequiredSubjectPrereqs", fields: [requiredSubjectId], references: [id])
+
+  @@unique([careerId, subjectId, requiredSubjectId])
+  @@index([careerId])
+  @@map("prerequisites")
+}
+
+// ─────────────────────────────────────────────
+// USUARIOS Y PROGRESO
+// ─────────────────────────────────────────────
+
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique @db.VarChar(255)
+  passwordHash  String?      @db.VarChar(255) @map("password_hash")
+  fullName      String       @db.VarChar(200) @map("full_name")
+  avatarUrl     String?      @db.VarChar(300) @map("avatar_url")
+  emailVerified Boolean      @default(false)  @map("email_verified")
+  authProvider  AuthProvider @default(email)  @map("auth_provider")
+  isActive      Boolean      @default(true)   @map("is_active")
+  lastLoginAt   DateTime?    @map("last_login_at")
+  createdAt     DateTime     @default(now())  @map("created_at")
+  updatedAt     DateTime     @updatedAt       @map("updated_at")
+
+  academicProfile     UserAcademicProfile?
+  userSubjectProgress UserSubjectProgress[]
+
+  @@map("users")
+}
+
+model UserAcademicProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique @map("user_id")
+  universityId   String   @map("university_id")
+  facultyId      String   @map("faculty_id")
+  careerId       String   @map("career_id")
+  enrollmentYear Int?     @map("enrollment_year")
+  studentId      String?  @db.VarChar(50) @map("student_id")
+  isPrimary      Boolean  @default(true)  @map("is_primary")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt      @map("updated_at")
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  university University @relation(fields: [universityId], references: [id])
+  faculty    Faculty    @relation(fields: [facultyId], references: [id])
+  career     Career     @relation(fields: [careerId], references: [id])
+
+  @@map("user_academic_profiles")
+}
+
+model UserSubjectProgress {
+  id              String         @id @default(uuid())
+  userId          String         @map("user_id")
+  careerId        String         @map("career_id")
+  subjectId       String         @map("subject_id")
+  status          SubjectStatus
+  grade           Decimal?       @db.Decimal(4, 2)
+  passedAt        DateTime?      @map("passed_at") @db.Date
+  regularizedAt   DateTime?      @map("regularized_at") @db.Date
+  attemptNumber   Int?           @map("attempt_number")
+  notes           String?        @db.Text
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt      @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  career  Career  @relation(fields: [careerId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@unique([userId, careerId, subjectId])
+  @@map("user_subject_progress")
+}
+
+// ─────────────────────────────────────────────
+// MESAS DE EXAMEN
+// ─────────────────────────────────────────────
+
+model Exam {
+  id              String    @id @default(uuid())
+  careerId        String    @map("career_id")
+  subjectId       String    @map("subject_id")
+  examType        ExamType  @map("exam_type")
+  examDate        DateTime  @map("exam_date") @db.Date
+  startTime       String?   @map("start_time") @db.VarChar(10)
+  endTime         String?   @map("end_time") @db.VarChar(10)
+  location            String?   @db.VarChar(200)
+  registrationOpen    DateTime? @map("registration_open") @db.Date
+  registrationClose   DateTime? @map("registration_close") @db.Date
+  callNumber          Int?      @map("call_number")
+  notes               String?   @db.Text
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt      @map("updated_at")
+
+  career  Career  @relation(fields: [careerId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@index([careerId])
+  @@index([subjectId])
+  @@map("exams")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum ExamType {
+  parcial
+  final
+  integrador
+  recuperatorio
+
+  @@map("exam_type")
+}
+
+enum DegreeType {
+  licenciatura
+  ingenieria
+  profesorado
+  tecnicatura
+  doctorado
+
+  @@map("degree_type")
+}
+
+enum SubjectType {
+  obligatoria
+  electiva
+  optativa
+  taller
+
+  @@map("subject_type")
+}
+
+enum PrerequisiteType {
+  aprobada  // final aprobado
+  regular   // regularidad vigente
+  cursada   // solo haber cursado
+
+  @@map("prerequisite_type")
+}
+
+enum SubjectStatus {
+  aprobada
+  regular
+  cursada
+  libre
+  en_curso
+
+  @@map("subject_status")
+}
+
+enum AuthProvider {
+  email
+  google
+  github
+
+  @@map("auth_provider")
+}
