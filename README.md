@@ -7,10 +7,12 @@ TrayectAI ayuda a estudiantes universitarios a visualizar su progreso académico
 > Construido con Next.js 16 · React 19 · Prisma 6 · PostgreSQL (Supabase)
 
 <p align="center">
-  <strong>🎬 Demo en acción</strong><br><br>
-  <img src="public/demo-browser.gif" alt="TrayectAI — demo interactiva del navegador" width="90%" style="max-width:800px;border-radius:14px;border:1px solid var(--border)">
+  <strong>🚀 Probá TrayectAI en vivo</strong><br><br>
+  <a href="https://trayectai.vercel.app" style="background:var(--accent);color:var(--accent-text);padding:14px 28px;border-radius:14px;font-size:18px;font-weight:600;text-decoration:none;display:inline-block">
+    🌐 Abrir TrayectAI
+  </a>
   <br><br>
-  <em>Dashboard, plan de estudios, copiloto y cambio de temas.</em>
+  <em>Iniciá sesión con <strong>demo@trayectai.com</strong> | contraseña <strong>demo1234</strong></em>
 </p>
 
 ---
