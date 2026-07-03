@@ -6,6 +6,12 @@ TrayectAI ayuda a estudiantes universitarios a visualizar su progreso académico
 
 > Construido con Next.js 16 · React 19 · Prisma 6 · PostgreSQL (Supabase)
 
+<p align="center">
+  <img src="demo.svg" alt="TrayectAI demo" width="100%" max-width="800px">
+</p>
+
+> 📹 Demo del navegador: grabá un GIF de la UI con [ScreenToGif](https://www.screentogif.com/) y guardalo como `public/demo-browser.gif`.
+
 ---
 
 ## ✨ Funcionalidades
@@ -122,7 +128,18 @@ Persistencia de historial en `localStorage`. Todo el engine es rule-based y prep
 
 ## 🧪 Tests
 
-No hay framework de tests configurado actualmente.
+48 tests across 2 suites con **Vitest 4**:
+
+```bash
+npm test            # Watch mode
+npm run test:run    # Single run
+npm run test:coverage  # Con cobertura
+```
+
+| Suite | Tests |
+|-------|-------|
+| `lib/prerequisite-engine.test.ts` | 23 — motor de correlatividades, simulación, proyección |
+| `lib/chat-engine.test.ts` | 25 — copiloto, recomendaciones, casos borde |
 
 ---
 

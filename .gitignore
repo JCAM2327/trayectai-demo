@@ -46,6 +46,9 @@ skills-lock.json
 # planes de estudio (PDFs institucionales — no subir)
 planes/
 
+# backup files
+*.bak
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
