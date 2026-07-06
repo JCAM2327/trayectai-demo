@@ -12,7 +12,7 @@ TrayectAI ayuda a estudiantes universitarios a visualizar su progreso académico
     🌐 Abrir TrayectAI
   </a>
   <br><br>
-  <em>Iniciá sesión con <strong>demo@trayectai.com</strong> | contraseña <strong>demo1234</strong></em>
+  
 </p>
 
 ---
